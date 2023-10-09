@@ -5,21 +5,23 @@ import com.zezzi.eventzezziapp.data.networking.response.MealsCategoriesResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import retrofit2.await
 
 class MealsRepository(private val webService: MealsWebService = MealsWebService()) {
-    fun getMeals(successCallback: (response: MealsCategoriesResponse?) -> Unit) {
-        return webService.getMeals().enqueue(object : Callback<MealsCategoriesResponse> {
-            override fun onResponse(
-                call: Call<MealsCategoriesResponse>,
-                response: Response<MealsCategoriesResponse>
-            ) {
-                if (response.isSuccessful)
-                    successCallback(response.body())
+    suspend fun getMeals() {
+        return try{
+            val response =  withContext(Dispatchers.IO){
+                webService.getMeals().await()
             }
-
-            override fun onFailure(call: Call<MealsCategoriesResponse>, t: Throwable) {
-                // TODO treat failure
+            if(response.isSuccessful){
+                response.body()
             }
-        })
+            else{
+                null
+            }
+        }
+        catch(e: Exception){
+            null
+        }
     }
 }
