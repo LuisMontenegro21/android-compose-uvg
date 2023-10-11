@@ -8,20 +8,7 @@ import retrofit2.Response
 import retrofit2.await
 
 class MealsRepository(private val webService: MealsWebService = MealsWebService()) {
-    suspend fun getMeals() {
-        return try{
-            val response =  withContext(Dispatchers.IO){
-                webService.getMeals().await()
-            }
-            if(response.isSuccessful){
-                response.body()
-            }
-            else{
-                null
-            }
-        }
-        catch(e: Exception){
-            null
-        }
+    suspend fun getMeals(): mealsCategoryResponse {
+        return webService.getMeals()
     }
 }
